@@ -11,7 +11,7 @@ const ls = async (folder) => {
     try{
         files = await fs.readdir(folder)
     }catch(err){
-        console.error('Error when reaading the directory: ', error)
+        console.error('Error when reaading the directory: ', err)
         process.exit(1)
     }
     const filesPromises = files.map( async file => {
@@ -19,7 +19,12 @@ const ls = async (folder) => {
         let stats
         try{
             stats = await fs.stat(filePath)
-            return {name: file, size_mb: stats.size/1024, type: stats.isDirectory() ? 'dir' : 'file'}
+            return {
+                name: file,
+                size_mb: stats.size/1024,
+                type: stats.isDirectory() ? 'dir' : 'file',
+                lastModificationTime: stats.mtime
+            }
         }catch(err){
             console.error(`can't get ${filePath} stats: ${err}`)
         }      
